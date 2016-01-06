@@ -35,6 +35,11 @@
 #define EVENT_SERVER_URL                [NSURL URLWithString:@"https://api.breadwallet.com/events"]
 #define SAMPLE_CHANCE                   10
 
+#if ! EVENT_LOGGING
+#define NSLog(...)
+#endif
+
+
 @interface BREventManager ()
 
 @property NSString *sessionId;

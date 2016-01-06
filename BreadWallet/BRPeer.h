@@ -25,7 +25,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define PEER_LOGGING          1 // comment this out to turn off logging of bitcoin network events
 
 #if BITCOIN_TESTNET
 #define BITCOIN_STANDARD_PORT 18333

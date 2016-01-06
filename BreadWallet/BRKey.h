@@ -36,31 +36,31 @@ typedef union _UInt160 UInt160;
 
 UInt256 secp256k1_mod_add(UInt256 a, UInt256 b); // add 256bit big endian ints (mod secp256k1 order)
 UInt256 secp256k1_mod_mul(UInt256 a, UInt256 b); // multiply 256bit big endian ints (mod secp256k1 order)
-size_t secp256k1_point_add(void *r, const void *a, const void *b, int compressed); // add secp256k1 ec-points
-size_t secp256k1_point_mul(void *r, const void *p, UInt256 i, int compressed); // multiply ec-point by 256bit BE int
+size_t secp256k1_point_add(void * _Nonnull r, const void * _Nonnull a, const void * _Nonnull b, int compressed); // add secp256k1 ec-points
+size_t secp256k1_point_mul(void * _Nonnull r, const void * _Nonnull p, UInt256 i, int compressed); // multiply ec-point by 256bit BE int
 
 @interface BRKey : NSObject
 
-@property (nonatomic, readonly) NSString *privateKey;
-@property (nonatomic, readonly) NSData *publicKey;
-@property (nonatomic, readonly) NSString *address;
+@property (nullable, nonatomic, readonly) NSString *privateKey;
+@property (nullable, nonatomic, readonly) NSData *publicKey;
+@property (nullable, nonatomic, readonly) NSString *address;
 @property (nonatomic, readonly) UInt160 hash160;
 
-+ (instancetype)keyWithPrivateKey:(NSString *)privateKey;
-+ (instancetype)keyWithSecret:(UInt256)secret compressed:(BOOL)compressed;
-+ (instancetype)keyWithPublicKey:(NSData *)publicKey;
-+ (instancetype)keyRecoveredFromCompactSig:(NSData *)compactSig andMessageDigest:(UInt256)md;
++ (nullable instancetype)keyWithPrivateKey:(nonnull NSString *)privateKey;
++ (nullable instancetype)keyWithSecret:(UInt256)secret compressed:(BOOL)compressed;
++ (nullable instancetype)keyWithPublicKey:(nonnull NSData *)publicKey;
++ (nullable instancetype)keyRecoveredFromCompactSig:(nonnull NSData *)compactSig andMessageDigest:(UInt256)md;
 
-- (instancetype)initWithPrivateKey:(NSString *)privateKey;
-- (instancetype)initWithSecret:(UInt256)secret compressed:(BOOL)compressed;
-- (instancetype)initWithPublicKey:(NSData *)publicKey;
-- (instancetype)initWithCompactSig:(NSData *)compactSig andMessageDigest:(UInt256)md;
+- (nullable instancetype)initWithPrivateKey:(nonnull NSString *)privateKey;
+- (nullable instancetype)initWithSecret:(UInt256)secret compressed:(BOOL)compressed;
+- (nullable instancetype)initWithPublicKey:(nonnull NSData *)publicKey;
+- (nullable instancetype)initWithCompactSig:(nonnull NSData *)compactSig andMessageDigest:(UInt256)md;
 
-- (NSData *)sign:(UInt256)md;
-- (BOOL)verify:(UInt256)md signature:(NSData *)sig;
+- (nullable NSData *)sign:(UInt256)md;
+- (BOOL)verify:(UInt256)md signature:(nonnull NSData *)sig;
 
 // Pieter Wuille's compact signature encoding used for bitcoin message signing
 // to verify a compact signature, recover a public key from the signature and verify that it matches the signer's pubkey
-- (NSData *)compactSign:(UInt256)md;
+- (nullable NSData *)compactSign:(UInt256)md;
 
 @end

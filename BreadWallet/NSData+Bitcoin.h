@@ -105,6 +105,9 @@ void PBKDF2(void *dk, size_t dklen, void (*hash)(void *, const void *, size_t), 
 
 @interface NSData (Bitcoin)
 
++ (instancetype)dataWithUInt256:(UInt256)n;
++ (instancetype)dataWithBase58String:(NSString *)b58str;
+
 - (UInt160)SHA1;
 - (UInt256)SHA256;
 - (UInt256)SHA256_2;
@@ -124,5 +127,7 @@ void PBKDF2(void *dk, size_t dklen, void (*hash)(void *, const void *, size_t), 
 
 - (NSArray *)scriptElements; // an array of NSNumber and NSData objects representing each script element
 - (int)intValue; // returns the opcode used to store the receiver in a script (i.e. OP_PUSHDATA1)
+
+- (NSString *)base58String;
 
 @end

@@ -28,7 +28,7 @@
 
 @interface BREventManager : NSObject
 
-// typtically this class is used as a singleton so this is how you should get a handle on the global event manager
+// typically this class is used as a singleton so this is how you should get a handle on the global event manager
 + (instancetype)sharedEventManager;
 
 // convenience method for [[BREventManager sharedEventManager] saveEvent:(NSString*)]

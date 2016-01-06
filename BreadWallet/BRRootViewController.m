@@ -1016,7 +1016,7 @@ viewControllerAfterViewController:(UIViewController *)viewController
     else if ([to isKindOfClass:[UINavigationController class]] && from == self.navigationController) { // modal display
         // to.view must be added to superview prior to positioning it off screen for its navbar to underlap statusbar
         [self.navigationController.navigationBar.superview insertSubview:to.view
-         belowSubview:self.navigationController.navigationBar];
+                                                            belowSubview:self.navigationController.navigationBar];
         [containerView layoutIfNeeded];
         to.view.center = CGPointMake(to.view.center.x, containerView.frame.size.height*3/2);
 
