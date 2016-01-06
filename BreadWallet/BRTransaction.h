@@ -57,6 +57,8 @@ typedef union _UInt256 UInt256;
 @property (nonatomic, readonly) BOOL isSigned; // checks if all signatures exist, but does not verify them
 @property (nonatomic, readonly, getter = toData) NSData *data;
 
+@property (nonatomic, readonly) NSString *longDescription;
+
 + (instancetype)transactionWithMessage:(NSData *)message;
 
 - (instancetype)initWithMessage:(NSData *)message;

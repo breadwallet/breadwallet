@@ -27,6 +27,7 @@
 #import "BRPeerManager.h"
 #import "BRWalletManager.h"
 #import "BREventManager.h"
+#import "BRPhoneWCSessionManager.h"
 
 #if BITCOIN_TESTNET
 #pragma message "testnet build"
@@ -35,6 +36,16 @@
 #if SNAPSHOT
 #pragma message "snapshot build"
 #endif
+
+
+@interface BRAppDelegate ()
+// balance notification properties -
+// the nsnotificationcenter observer for wallet balance
+@property id balanceNotificationObserver;
+// the most recent balance as received by notification
+@property uint64_t balanceNotificationBalance;
+@end
+
 
 @implementation BRAppDelegate
 
@@ -76,6 +87,14 @@
     
     //TODO: implement importing of private keys split with shamir's secret sharing:
     //      https://github.com/cetuscetus/btctool/blob/bip/bip-xxxx.mediawiki
+
+    // start WCSession manager
+    [BRPhoneWCSessionManager sharedInstance];
+    
+    // observe balance and create notifications
+    [self setupBalanceNotification:application];
+    
+    [self setupPreferenceDefaults];
 
     return YES;
 }
@@ -152,6 +171,7 @@ performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionH
                 [UIApplication sharedApplication].applicationIconBadgeNumber =
                     [UIApplication sharedApplication].applicationIconBadgeNumber + 1;
             }
+            NSLog(@"background got new balance notification %@ %llu -> %llu", note, balance, manager.wallet.balance);
             
             balance = manager.wallet.balance;
         }];
@@ -178,6 +198,53 @@ performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionH
     
     // sync events to the server
     [[BREventManager sharedEventManager] sync];
+}
+
+- (void)setupBalanceNotification:(UIApplication *)application
+{
+    BRWalletManager *manager = [BRWalletManager sharedInstance];
+    void (^balanceUpdate)(NSNotification * _Nonnull) = ^(NSNotification *_Nonnull _) {
+        if (self.balanceNotificationBalance < manager.wallet.balance) {
+            NSString *noteText = [NSString stringWithFormat:
+                                  NSLocalizedString(@"received %@ (%@)", nil),
+                                  [manager stringForAmount:manager.wallet.balance - self.balanceNotificationBalance],
+                                  [manager localCurrencyStringForAmount:
+                                   manager.wallet.balance - self.balanceNotificationBalance]];
+            
+            // send a local notification if in the background
+            BOOL send = [[NSUserDefaults standardUserDefaults] boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
+            NSLog(@"local notifications enabled=%d", send);
+            if ((application.applicationState == UIApplicationStateBackground
+                    || application.applicationState == UIApplicationStateInactive) && send) {
+                UILocalNotification *note = [[UILocalNotification alloc] init];
+                note.alertBody = noteText;
+                note.soundName = @"coinflip";
+                [[UIApplication sharedApplication] presentLocalNotificationNow:note];
+                NSLog(@"sent local notification %@", note);
+            }
+            // send a custom notification to the watch if the watch app is up
+            [[BRPhoneWCSessionManager sharedInstance] notifyTransactionString:noteText];
+        }
+        self.balanceNotificationBalance = manager.wallet.balance;
+    };
+    
+    self.balanceNotificationObserver = [[NSNotificationCenter defaultCenter]
+                                        addObserverForName:BRWalletBalanceChangedNotification
+                                        object:nil
+                                        queue:nil
+                                        usingBlock:balanceUpdate];
+    self.balanceNotificationBalance = manager.wallet.balance;
+}
+
+- (void)setupPreferenceDefaults {
+    NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+    
+    // turn on local notifications by default
+    if (![defs boolForKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_SWITCH_KEY]) {
+        NSLog(@"enabling local notifications by default");
+        [defs setBool:true forKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_SWITCH_KEY];
+        [defs setBool:true forKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
+    }
 }
 
 - (void)application:(UIApplication *)application

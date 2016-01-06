@@ -199,6 +199,23 @@ outputAddresses:(NSArray *)addresses outputAmounts:(NSArray *)amounts
     return self.outScripts;
 }
 
+- (NSString *)description
+{
+    NSString *txid = [NSString hexWithData:[NSData dataWithBytes:self.txHash.u8 length:sizeof(UInt256)].reverse];
+    return [NSString stringWithFormat:@"%@(id=%@)", [self class], txid];
+}
+
+- (NSString *)longDescription
+{
+    NSString *txid = [NSString hexWithData:[NSData dataWithBytes:self.txHash.u8 length:sizeof(UInt256)].reverse];
+    return [NSString stringWithFormat:
+            @"%@(id=%@, inputHashes=%@, inputIndexes=%@, inputScripts=%@, inputSignatures=%@, inputSequences=%@, "
+                           "outputAmounts=%@, outputAddresses=%@, outputScripts=%@)",
+            [[self class] description], txid,
+            self.inputHashes, self.inputIndexes, self.inputScripts, self.inputSignatures, self.inputSequences,
+            self.outputAmounts, self.outputAddresses, self.outputScripts];
+}
+
 // size in bytes if signed, or estimated size assuming compact pubkey sigs
 - (size_t)size
 {

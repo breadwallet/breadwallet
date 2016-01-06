@@ -81,6 +81,7 @@
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
             <string>HelveticaNeue-Light</string>
+            <string>HelveticaNeue-Light</string>
         </mutableArray>
     </customFonts>
     <scenes>
@@ -2171,6 +2172,41 @@
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="0.67000000000000004" colorSpace="calibratedWhite"/>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="SwitchCell" id="Pe6-Hf-Vsq" customClass="BRUserDefaultsSwitchCell">
+                                <rect key="frame" x="0.0" y="306" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Pe6-Hf-Vsq" id="anH-PG-rgl">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="1100" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mxS-i4-y1n">
+                                            <rect key="frame" x="15" y="0.0" width="42" height="43.5"/>
+                                            <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="17"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="0.69999999999999996" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <switch opaque="NO" tag="1101" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4SS-5m-RoG">
+                                            <rect key="frame" x="308" y="6" width="51" height="31"/>
+                                            <connections>
+                                                <action selector="didUpdateSwitch:" destination="Pe6-Hf-Vsq" eventType="valueChanged" id="kim-Vz-Wk2"/>
+                                            </connections>
+                                        </switch>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="mxS-i4-y1n" firstAttribute="leading" secondItem="anH-PG-rgl" secondAttribute="leadingMargin" constant="10" id="DcE-om-Ph7"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="mxS-i4-y1n" secondAttribute="trailing" id="MWo-tl-gPd"/>
+                                        <constraint firstItem="4SS-5m-RoG" firstAttribute="centerY" secondItem="anH-PG-rgl" secondAttribute="centerY" id="Qk9-Zx-Ztk"/>
+                                        <constraint firstItem="4SS-5m-RoG" firstAttribute="trailing" secondItem="anH-PG-rgl" secondAttribute="trailingMargin" constant="-10" id="pbQ-EL-hvu"/>
+                                        <constraint firstItem="mxS-i4-y1n" firstAttribute="top" secondItem="anH-PG-rgl" secondAttribute="topMargin" id="sK8-te-S1j"/>
+                                        <constraint firstAttribute="bottomMargin" secondItem="mxS-i4-y1n" secondAttribute="bottom" id="wdn-ww-LII"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <color key="backgroundColor" white="1" alpha="0.67000000000000004" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="theSwitch" destination="4SS-5m-RoG" id="FOr-aZ-qN5"/>
+                                    <outlet property="titleLabel" destination="mxS-i4-y1n" id="xhY-JU-IDh"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="RgM-X7-fUn" id="x0n-Hk-3rX"/>
@@ -2185,7 +2221,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5gr-Y6-6n9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1944" y="703"/>
+            <point key="canvasLocation" x="1943.5" y="702.5"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="TLa-Oc-b9n">
