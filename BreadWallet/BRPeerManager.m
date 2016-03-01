@@ -36,6 +36,7 @@
 #import "NSString+Bitcoin.h"
 #import "NSData+Bitcoin.h"
 #import "NSManagedObject+Sugar.h"
+#import "BREventManager.h"
 #import <netdb.h>
 
 #if ! PEER_LOGGING
@@ -522,6 +523,7 @@ static const char *dns_seeds[] = {
 // adds transaction to list of tx to be published, along with any unconfirmed inputs
 - (void)addTransactionToPublishList:(BRTransaction *)transaction
 {
+    NSLog(@"[BRPeerManager] add transaction to publish list %@", transaction);
     if (transaction.blockHeight == TX_UNCONFIRMED) {
         self.publishedTx[uint256_obj(transaction.txHash)] = transaction;
     
@@ -536,8 +538,10 @@ static const char *dns_seeds[] = {
 
 - (void)publishTransaction:(BRTransaction *)transaction completion:(void (^)(NSError *error))completion
 {
+    NSLog(@"[BRPeerManager] publish transaction %@", transaction);
     if (! transaction.isSigned) {
         if (completion) {
+            [[BREventManager sharedEventManager] saveEvent:@"peer_manager:not_signed"];
             completion([NSError errorWithDomain:@"BreadWallet" code:401 userInfo:@{NSLocalizedDescriptionKey:
                         NSLocalizedString(@"bitcoin transaction not signed", nil)}]);
         }
@@ -546,6 +550,7 @@ static const char *dns_seeds[] = {
     }
     else if (! self.connected && self.connectFailures >= MAX_CONNECT_FAILURES) {
         if (completion) {
+            [[BREventManager sharedEventManager] saveEvent:@"peer_manager:not_connected"];
             completion([NSError errorWithDomain:@"BreadWallet" code:-1009 userInfo:@{NSLocalizedDescriptionKey:
                         NSLocalizedString(@"not connected to the bitcoin network", nil)}]);
         }
@@ -646,6 +651,7 @@ static const char *dns_seeds[] = {
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(txTimeout:) object:txHash];
 
     if (callback) {
+        [[BREventManager sharedEventManager] saveEvent:@"peer_manager:tx_canceled_timeout"];
         callback([NSError errorWithDomain:@"BreadWallet" code:BITCOIN_TIMEOUT_CODE userInfo:@{NSLocalizedDescriptionKey:
                   NSLocalizedString(@"transaction canceled, network timeout", nil)}]);
     }
@@ -748,6 +754,7 @@ static const char *dns_seeds[] = {
         if ([self.txRelays[hash] count] == 0 && [self.txRequests[hash] count] == 0) {
             // if this is for a transaction we sent, and it wasn't already known to be invalid, notify user of failure
             if (! rescan && [manager.wallet amountSentByTransaction:tx] > 0 && [manager.wallet transactionIsValid:tx]) {
+                NSLog(@"failed transaction %@", tx);
                 rescan = notify = YES;
                 
                 for (NSValue *hash in tx.inputHashes) { // only recommend a rescan if all inputs are confirmed
@@ -769,6 +776,7 @@ static const char *dns_seeds[] = {
     if (notify) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (rescan) {
+                [[BREventManager sharedEventManager] saveEvent:@"peer_manager:tx_rejected_rescan"];
                 [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"transaction rejected", nil)
                   message:NSLocalizedString(@"Your wallet may be out of sync.\n"
                                             "This can often be fixed by rescanning the blockchain.", nil) delegate:self
@@ -776,6 +784,7 @@ static const char *dns_seeds[] = {
                   otherButtonTitles:NSLocalizedString(@"rescan", nil), nil] show];
             }
             else {
+                [[BREventManager sharedEventManager] saveEvent:@"peer_manager_tx_rejected"];
                 [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"transaction rejected", nil)
                   message:nil delegate:nil cancelButtonTitle:NSLocalizedString(@"ok", nil) otherButtonTitles:nil] show];
             }
@@ -848,6 +857,7 @@ static const char *dns_seeds[] = {
 
 - (void)savePeers
 {
+    NSLog(@"[BRPeerManager] save peers");
     NSMutableSet *peers = [[self.peers.set setByAddingObjectsFromSet:self.misbehavinPeers] mutableCopy];
     NSMutableSet *addrs = [NSMutableSet set];
 
@@ -883,6 +893,7 @@ static const char *dns_seeds[] = {
 
 - (void)saveBlocks
 {
+    NSLog(@"[BRPeerManager] save blocks");
     NSMutableDictionary *blocks = [NSMutableDictionary dictionary];
     BRMerkleBlock *b = self.lastBlock;
 

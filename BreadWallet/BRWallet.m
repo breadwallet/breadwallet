@@ -531,6 +531,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     if (self.allTx[hash] != nil) return YES;
 
     //TODO: handle tx replacement with input sequence numbers (now replacements appear invalid until confirmation)
+    NSLog(@"[BRWallet] received unseen transaction %@", transaction);
     
     self.allTx[hash] = transaction;
     [self.transactions insertObject:transaction atIndex:0];

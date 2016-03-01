@@ -29,6 +29,7 @@
 #import "BRBubbleView.h"
 #import "BREventManager.h"
 #include <asl.h>
+#import "BRUserDefaultsSwitchCell.h"
 
 
 @interface BRSettingsViewController ()
@@ -201,7 +202,7 @@
     
     switch (section) {
         case 0: return 2;
-        case 1: return (self.touchId) ? 2 : 1;
+        case 1: return (self.touchId) ? 3 : 2;
         case 2: return 2;
     }
     
@@ -256,9 +257,19 @@
                         cell = [tableView dequeueReusableCellWithIdentifier:selectorIdent];
                         cell.textLabel.text = NSLocalizedString(@"touch id limit", nil);
                         cell.detailTextLabel.text = [manager stringForAmount:manager.spendingLimit];
-                        break;
+                    } else {
+                        goto _switch_cell;
                     }
-                    // passthrough if ! self.touchId
+                case 2:
+                {
+_switch_cell:
+                    cell = [tableView dequeueReusableCellWithIdentifier:@"SwitchCell"];
+                    BRUserDefaultsSwitchCell *switchCell = (BRUserDefaultsSwitchCell *)cell;
+                    switchCell.titleLabel.text = NSLocalizedString(@"enable receive notifications", nil);
+                    [switchCell setUserDefaultsKey:USER_DEFAULTS_LOCAL_NOTIFICATIONS_KEY];
+                    break;
+                }
+                    
             }
             
             break;
@@ -476,8 +487,14 @@
                     if (self.touchId) {
                         [self performSelector:@selector(touchIdLimit:) withObject:nil afterDelay:0.0];
                         break;
+                    } else {
+                        goto _deselect_switch;
                     }
-                    // passthrough if ! self.touchId
+                case 2:
+_deselect_switch:
+                {
+                    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+                }
             }
             
             break;
